@@ -1,0 +1,68 @@
+<% provide(:title, 'All users') %>
+
+
+<h1>All users</h1>
+<center>
+<%#= form_for(current_user.relationships.followall,
+             remote: true) do |f| %>
+  <div><%#= f.hidden_field :followed_id %></div>
+  <%#= f.submit "Follow all", class: "btn btn-large btn-primary", data: { "loading-text" => "wait..." } %>
+<%#end%>
+
+<%= link_to "Follow All Users", followall_path, :class => "btn btn-primary btn-large" %></center>
+
+
+<br>
+
+
+
+
+
+<div class="border-form-div">
+	 <div class="right-inner-addon ">
+            <i id="searchclear" class="glyphicon glyphicon-remove-circle"></i>
+            <input type="search"
+           class="form-control" 
+           placeholder="Search" id="usersearcher" autofocus="true"/> 
+           </div><br>
+
+
+<ul class="users">
+<%# do some foreach shit here%>
+
+
+<div id="usersearch">
+  <%= render @users %>
+</div>
+
+<div id="usersearch2">
+</div>
+</section>
+  <%# if current_user.admin? && !current_user?(user) %>
+    <%#= link_to "delete", user, method: :delete,
+                                  data: { confirm: "You sure?" } %>
+  <%# end %>
+</div>
+  <hr>
+</ul>
+</div>
+
+<script type="text/javascript">
+$(function() {
+  $('form').submit(function(){
+    location.reload();
+  });
+});
+</script>
+
+<script>
+$("#usersearcher").keyup(function(event) {
+    $.get('user_search/?usersearch='+ $(this).val());
+  });
+</script>
+
+<script>
+      $("#searchclear").click(function(){
+      $("#usersearcher").val('');
+    });
+</script>

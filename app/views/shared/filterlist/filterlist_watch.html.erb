@@ -1,0 +1,4 @@
+      <a class="col-xs-2" onclick="document.getElementById('searcher').value='*<%= current_user.name %> Posts*'; $.get('micropost_filter/?filter=myposts');" style="cursor:pointer;">My Posts</a>
+      
+      <a class="col-xs-2" onclick="document.getElementById('searcher').value='*Follow up Posts*'; $.get('micropost_filter/?filter=followups');" style="cursor:pointer;">Follow up</a>
+      <a class="col-xs-2" onclick="document.getElementById('searcher').value='*Watched Posts*'; $.get('micropost_filter/?filter=watched');" style="cursor:pointer;">Watched</a>

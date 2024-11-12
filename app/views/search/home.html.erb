@@ -1,0 +1,80 @@
+<% if signed_in? %>
+  <div class="row">
+    <aside class="span4 col-xs-6 col-md-6">
+      <section>
+        <h3>Profile</h3>
+          <a href="<%= user_path(current_user) %>">
+              <%= gravatar_for current_user, size: 62 %>
+          <h1>
+            <%= current_user.name %>
+          </h1>
+          </a>
+          <span class="btn btn-success col-xs-3 divspace">
+            <%= pluralize(current_user.microposts.count, "Loop posts") %>
+          </span>
+          <span class="col-xs-1" style="width: 1%;"></span>
+          <span class="btn btn-primary col-xs-3 divspace">
+            <%= pluralize(current_user.metoos.count, "Me Toos") %> </span>
+          <span class="col-xs-1" style="width: 1%;"></span>
+          <span class="btn btn-warning col-xs-3 divspace">
+            <%= pluralize(current_user.followups.count, "Follow Ups") %></span>
+        <%#= render 'shared/user_info' %>
+      </section>
+      <br>
+      <h3>Log a Loop</h3>
+        <%= render 'shared/micropost_form' %>
+      
+    </aside>
+    <div class="span8 col-xs-6 col-md-6">
+      <h3>In the Loop</h3>
+      <div class="right-inner-addon ">
+         <i class="glyphicon glyphicon-search"></i>
+          <input type="search"
+           class="form-control" 
+           placeholder="Search" id="searcher" />   
+      
+      <div class="col-xs-1"></div>
+      <div class="row">
+      <div class="col-xs-1">FILTERS:</div> 
+      <div class="col-xs-1"></div> 
+      <a href="/?search=paul" class="col-xs-2">My Posts</a>
+      <a href="/?search=csr" class="col-xs-2">My Team</a>
+      <a class="col-xs-2">Follow up</a>
+      <a class="col-xs-2">Favorites</a>
+      </div></div>
+      <br>
+      <div class="#microposts">
+        <%= @feed_items.all %>
+        <%#= foreach post that meet search criteria%>
+        <% @feed_items.each do |feed_item| %>
+        <%= feed_item.content %>,<br>
+        <% end %>
+
+      
+    <%# end %>
+      </div>
+      <%= render 'shared/feed' %>
+        
+    </div>
+  </div>
+<% else %>
+  <div class="center hero-unit jumbotron">
+    <h1>Project Loop</h1>
+
+    <h2>
+      Log in to get in the Loop using your Workiva Account:
+    </h2>
+    <hr>
+    <br>
+
+    <a class="btn btn-xlarge btn-success" href="/users/auth/google_oauth2" title="Sign in"><img src="/assets/images/W_white.png" />  &nbsp;&nbsp;&nbsp;Sign in with Workiva Email</a>
+    <%#= link_to "Sign in to Loop using your Workiva email", new_user_session_path, class: "btn btn-xlarge btn-success" %>
+  </div>
+
+<% end %>
+
+<script>
+$("#searcher").keyup(function(event) {
+    $.get('micropost_search/?search='+ $(this).val());
+  });
+</script>

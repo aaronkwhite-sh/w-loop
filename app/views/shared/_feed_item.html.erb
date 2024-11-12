@@ -1,0 +1,216 @@
+<li id="<%= feed_item.id %>">
+  <%= link_to gravatar_for(feed_item.user), feed_item.user %>
+    <span class="user">
+      <%= link_to feed_item.user.name, feed_item.user %> - <%= time_ago_in_words(feed_item.created_at) %> ago
+    </span>
+    <span class="calltime pull-right">
+      <%= feed_item.min %> min 
+      <% if feed_item.mood == '1' %> <img src="/assets/images/happy.png" title="Happy User" />
+      <% elsif feed_item.mood == '2' %> <img src="/assets/images/neutral.png" title="Neutral User" />
+      <% elsif feed_item.mood == '3' %> <img src="/assets/images/angry.png" title="Angry User" />
+      <% else %> <img src="/assets/images/unknown_neutral.png" title="Neutral User" /> <% end %>
+    </span>
+
+    <span class="content"><% temp_content = linkify_hashtags(feed_item.content) %> <%= auto_link(temp_content, :html => { :target => '_blank' }, :sanitize => false).html_safe %></span>
+    <span class="tags">
+
+      <% feed_item.areaofapparray.each do |x| %>
+      <a onclick="document.getElementById('searcher').value='<%= x %>'; $.get('micropost_search/?search=<%= x %>');_gaq.push(['_trackEvent', 'Hashtag', 'Filters', '<%= x %>']);" style="cursor:pointer;">#<%= x %></a>, 
+      <%end%>
+      <a onclick="document.getElementById('searcher').value='<%= feed_item.typeofcall %>'; $.get('micropost_search/?search=<%= feed_item.typeofcall %>');_gaq.push(['_trackEvent', 'Hashtag', 'Filters', '<%= feed_item.typeofcall %>']);" style="cursor:pointer;">#<%= feed_item.typeofcall %></a>, 
+
+      <a onclick="document.getElementById('searcher').value='<%= feed_item.company %>'; $.get('micropost_search/?search=<%= feed_item.company %>');gaq.push(['_trackEvent', 'Hashtag', 'Filters', '<%= feed_item.company %>']);" style="cursor:pointer;">#<%= feed_item.company %></a>
+
+    </span>
+    <br>
+    <span class="timestamp">
+      
+    </span>
+    
+  <% if current_user == feed_item.user %>
+  <div class="usercontrols">
+    <% if Followup.where(:user_id => current_user, :micropost_id => feed_item.id, :done => nil).present? %>
+    <%= link_to raw('<i class="glyphicon glyphicon-exclamation-sign"></i> Action'), {:controller => "followup", 
+                       :action => "create", 
+                       :user_id => current_user.id, 
+                       :done => true,
+                       :micropost_id => feed_item.id,
+                       :feed_user => feed_item.user.name},
+                       :method => "post", data: { confirm: "You sure this is really complete?" }, title: feed_item.content, class: "btn btn-default btn-xs btn-danger", :style=>'', onclick: "" %> &nbsp;
+    <% elsif Followup.where(:user_id => current_user, :micropost_id => feed_item.id, :done => true).present? %>
+    <%= link_to raw('<i class="glyphicon glyphicon-exclamation-sign"></i> Action'), {:controller => "followup", 
+                       :action => "create", 
+                       :user_id => current_user.id, 
+                       :done => nil,
+                       :micropost_id => feed_item.id,
+                       :feed_user => feed_item.user.name},
+                       :method => "post", data: { confirm: "You sure you want to reset this completed action?" }, class: "btn btn-default btn-xs", :style=>'color:#51A351; text-decoration:line-through;', onclick: "" %> &nbsp;
+    <% else %>
+    <%= link_to raw('<i class="glyphicon glyphicon-exclamation-sign"></i> Action'), {:controller => "followup", 
+                       :action => "create", 
+                       :user_id => current_user.id, 
+                       :micropost_id => feed_item.id,
+                       :feed_user => feed_item.user.name},
+                       :method => "post", class: " btn btn-default btn-xs", :style=>'none', onclick: "" %> &nbsp;
+    <% end %>
+    
+    <% if Favorite.where(:user_id => current_user, :micropost_id => feed_item.id).present? %>
+    <%= link_to raw('<i class="glyphicon glyphicon-eye-open"></i> Watched'), {:controller => "favorite", 
+                       :action => "create", 
+                       :user_id => current_user.id, 
+                       :micropost_id => feed_item.id,
+                       :feed_user => feed_item.user.name},
+                       :method => "post", class: "btn btn-default btn-xs btn-warning", :style=>'', onclick: "" %>
+    <% else %>
+    <%= link_to raw('<i class="glyphicon glyphicon-eye-open"></i> Watch'), {:controller => "favorite", 
+                       :action => "create", 
+                       :user_id => current_user.id, 
+                       :micropost_id => feed_item.id,
+                       :feed_user => feed_item.user.name},
+                       :method => "post", class: "btn btn-default btn-xs", onclick: "" %>
+    <% end %> 
+
+    <%= link_to "Delete", feed_item, method: :delete, data: { confirm: "You sure?" }, title: feed_item.content, class: "glyphicon glyphicon-trash btn btn-default btn-xs pull-right", onclick: "" %>
+    
+    <% if Favorite.where(:micropost_id => feed_item.id).present? %>
+    <a class="badge" style="cursor: help;" id="myfavpeople<%=feed_item.id%>"><%= Favorite.where(:micropost_id => feed_item.id).count %></a>&nbsp;
+
+    <div class="thispost<%=feed_item.id%>" style="display:none">
+    <h6> People Watching </h6>
+    <% names = Favorite.where(:micropost_id => feed_item.id)
+    names.all.each do |namesstuff| %>
+    <%= link_to gravatar_for(namesstuff.user, size: 28), namesstuff.user%> <%= link_to namesstuff.user.name, namesstuff.user %> <br> <br>
+    <%end%>
+    </div>
+
+
+
+    <%else%>
+    &nbsp;
+    <%end%>
+   
+  </div>
+  <% else %> <%# this is other users %>
+  <div class="usercontrols"> 
+
+
+    <% if Metoo.where(:user_id => current_user, :micropost_id => feed_item.id).present? %>
+    <%= link_to raw('<i class="glyphicon glyphicon-thumbs-up"></i> Me too\'ed'), {:controller => "metoo", 
+                       :action => "create", 
+                       :user_id => current_user.id, 
+                       :micropost_id => feed_item.id,
+                       :feed_user => feed_item.user.name},
+                       :method => "post", class: "btn btn-default btn-xs btn-warning", :style=>'', onclick: "" %>
+    <% else %>
+    <%= link_to raw('<i class="glyphicon glyphicon-thumbs-up"></i> Me too'), {:controller => "metoo", 
+                       :action => "create", 
+                       :user_id => current_user.id, 
+                       :micropost_id => feed_item.id,
+                       :feed_user => feed_item.user.name},
+                       :method => "post", class: " btn btn-default btn-xs", onclick: "" %> 
+    <% end %> 
+
+
+    <% if Metoo.where(:micropost_id => feed_item.id).present? %>
+    <span class="badge" style="cursor: help;" id="myfavpeople1<%=feed_item.id%>"><%= Metoo.where(:micropost_id => feed_item.id).count %></span>&nbsp;
+
+
+    <%else%>
+    &nbsp;
+    <%end%>
+
+    <% if Favorite.where(:user_id => current_user, :micropost_id => feed_item.id).present? %>
+    <%= link_to raw('<i class="glyphicon glyphicon-eye-open"></i> Watched'), {:controller => "favorite", 
+                       :action => "create", 
+                       :user_id => current_user.id, 
+                       :micropost_id => feed_item.id,
+                       :feed_user => feed_item.user.name},
+                       :method => "post", class: "btn btn-default btn-xs btn-warning", :style=>'', onclick: "" %>
+    <% else %>
+    <%= link_to raw('<i class="glyphicon glyphicon-eye-open"></i> Watch'), {:controller => "favorite", 
+                       :action => "create", 
+                       :user_id => current_user.id, 
+                       :micropost_id => feed_item.id,
+                       :feed_user => feed_item.user.name},
+                       :method => "post", class: "btn btn-default btn-xs", onclick: "" %>
+    <% end %>
+
+
+
+    <% if Favorite.where(:micropost_id => feed_item.id).present? %>
+    <a class="badge" style="cursor: help;" id="myfavpeople<%=feed_item.id%>"><%= Favorite.where(:micropost_id => feed_item.id).count %></a>&nbsp;
+
+    <div class="thispost<%=feed_item.id%>" style="display:none">
+    <% if Metoo.where(:micropost_id => feed_item.id).present? %>
+    <h6> People Me too'ing </h6>
+    <% pplmetoo = Metoo.where(:micropost_id => feed_item.id)
+    pplmetoo.all.each do |metoostuff| %>
+    <%= link_to gravatar_for(metoostuff.user, size: 28), metoostuff.user%> <%= link_to metoostuff.user.name, metoostuff.user %> <br> <br>
+    <%end%><%end%>
+
+    <h6> People Watching </h6>
+    <% names = Favorite.where(:micropost_id => feed_item.id)
+    names.all.each do |namesstuff| %>
+    <%= link_to gravatar_for(namesstuff.user, size: 28), namesstuff.user%> <%= link_to namesstuff.user.name, namesstuff.user %> <br> <br>
+    <%end%>
+
+
+    </div>
+
+    <%else%>
+    &nbsp;
+    <%end%>
+      </div> 
+  <% end %>
+</li>
+
+<script>
+$('#myfavpeople<%=feed_item.id%>').click(function() {
+    $('.thispost<%=feed_item.id%>').slideToggle('fast');
+    return false;
+});
+</script>
+<script>
+$('#myfavpeople1<%=feed_item.id%>').click(function() {
+    $('.thispost<%=feed_item.id%>').slideToggle('fast');
+    return false;
+});
+</script>
+
+<script>
+// This isn't necessarily specific to toggle buttons
+$(function() {
+
+  // Change the link's icon while the request is performing
+  $('a[data-remote]').on('click', function(event, b, c) {
+    var icon = $(this).find('i');
+    icon.data('old-class', icon.attr('class'));
+    icon.attr('class', 'icon-refresh');
+  });
+
+  // Change the link's icon back after it's finished.
+  $(document).ajaxComplete(function(e, request, options) {
+    var url = options.url;
+    url = url.split('?')[0]; // dataType="script" adds a timestamp to the URL
+
+    // find the link that generated the ajax call.
+    // This could be cleaner if more information was passed
+    // from jquery_ujs to the ajax callbacks.
+    $('a[href="' + url + '"]').each(function() {
+      var icon = $(this).find('i');
+      if (icon.data('old-class')) {
+        icon.attr('class', icon.data('old-class'));
+        icon.data('old-class', null);
+      }
+    })
+  });
+
+  // Don't fail silently
+  $(document).ajaxError(function( event, jqxhr, settings, exception ) {
+    if (jqxhr.status) {
+      alert("We're sorry, but something went wrong (" + jqxhr.status + ')');
+    }
+  });
+
+})
+</script>

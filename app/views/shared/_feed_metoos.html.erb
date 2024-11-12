@@ -1,0 +1,7 @@
+
+  <ol class="microposts">
+    <%#= foreach post that meet search criteria%>
+
+    <%= render partial: 'shared/feed_item', collection: current_user.metoos %>
+  </ol>
+  <%#= will_paginate @fav_items %>

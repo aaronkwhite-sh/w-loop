@@ -1,0 +1,53 @@
+<% provide(:title, @user.name) %>
+<div class="border-form-div">
+<div class="row">
+  <aside class="span5">
+    <section>
+      <h1>
+        <%= gravatar_for @user %>
+        <%= @user.name %>
+      </h1>
+      
+    </section>
+    <section>
+      <%= render 'shared/stats' %>
+    </section>
+  </aside>
+  <div class="col-xs-4 pull-right">
+              
+              <% unless current_user == @user %>
+                <div id="follow_form">
+                <% if current_user.following?(@user) %>
+                  <%= render 'unfollow' %>
+                <% else %>
+                  <%= render 'follow' %>
+                <% end %>
+                </div>
+              <% end %>
+  </div>
+  <hr>
+  
+
+
+
+  <div class="span8">
+    <h3>Loop Posts: <%= @user.microposts.count %></h3>
+    
+    <% if @user.microposts.any? %>
+      
+      <ol class="microposts">
+        <%= render @microposts %>
+      </ol>
+      <%= will_paginate @microposts %>
+    <% end %>
+  </div>
+</div>
+</div>
+
+<script>
+      $(function() {
+        $('.chosen-select').chosen({no_results_text: "Whoa! Thats not an company associated with Workiva:"});
+        
+        $("micropost_areaofapp").chosen().val();
+      });
+</script>

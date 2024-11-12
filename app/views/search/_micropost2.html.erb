@@ -1,0 +1,26 @@
+<li>
+  <span class="content"><%= micropost.content %></span>
+  <span class="timestamp">
+    Posted <%= time_ago_in_words(micropost.created_at) %> ago.
+  </span> <br>
+  <% if current_user == micropost.user %>
+    <span class="glyphicon glyphicon-thumbs-up">Me_too</span> &nbsp;
+    <% if Favorite.where(:user_id => current_user, :micropost_id => micropost.id).present? %>
+    <%= link_to 'Favorited', {:controller => "favorite", 
+                       :action => "create", 
+                       :user_id => current_user.id, 
+                       :micropost_id => micropost.id,
+                       :feed_user => micropost.user.name},
+                       :method => "post", class: "glyphicon glyphicon-star", :style=>'color:#FFA500;' %> &nbsp;
+    <% else %>
+    <%= link_to 'Favorite', {:controller => "favorite", 
+                       :action => "create", 
+                       :user_id => current_user.id, 
+                       :micropost_id => micropost.id,
+                       :feed_user => micropost.user.name},
+                       :method => "post", class: "glyphicon glyphicon-star" %> &nbsp;
+    <% end %>
+    <!-- <a href="" class="glyphicon glyphicon-edit">Edit</a> &nbsp;-->
+    <%= link_to "Delete", micropost, method: :delete, data: { confirm: "You sure?" }, title: micropost.content, class: "glyphicon glyphicon-trash" %>
+  <% end %>
+</li>

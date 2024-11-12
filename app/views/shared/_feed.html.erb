@@ -1,0 +1,16 @@
+<% if @feed_items.any? %>
+  <ol class="microposts">
+    <%#= foreach post that meet search criteria%>
+    <%# @feed_items.each do |feed_item| %>
+    	<%#= feed_item.id %>
+
+    	
+    <%# end %>
+    <%= render partial: 'shared/feed_item', collection: @feed_items %>
+
+  </ol>
+  <%= will_paginate @feed_items %>
+  <%else%>
+  <hr>
+  <center><p>Get started by following <a href="/users">users</a> or making a post</p></center>
+<% end %>

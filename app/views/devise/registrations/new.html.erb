@@ -1,0 +1,37 @@
+<div class="border-form-div">
+<h2>Sign up</h2>
+<style>
+.opahover img {
+opacity: 0.5;
+}
+.opahover img:hover {
+opacity: 1;
+}
+</style>
+
+<hr> <center>
+<h2>Use your Workiva Google account to sign up</h2>
+<div class="opahover span4 centered">
+<a href="/users/auth/google_oauth2" title="Google Plus"><img src="/assets/images/google_plus-round-64.png" /></a>
+</div>
+<hr> 
+<h2>Or create a user login account:</h2>
+</center>
+
+<%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+  <%= devise_error_messages! %>
+
+  <div><%= f.label :email %><br />
+  <%= f.email_field :email, autofocus: true %></div>
+
+  <div><%= f.label :password %><br />
+    <%= f.password_field :password, autocomplete: "off" %></div>
+
+  <div><%= f.label :password_confirmation %><br />
+    <%= f.password_field :password_confirmation, autocomplete: "off" %></div>
+
+  <div><%= f.submit "Sign up", :class=>'btn-large btn-success center-content' %></div>
+<% end %>
+
+<%= render "devise/shared/links" %>
+</div>

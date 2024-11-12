@@ -1,0 +1,132 @@
+<% if signed_in? %>
+    <aside class="col-lg-6 col-xs-12">
+      <section>
+        <br>
+          <a href="<%= user_path(current_user) %>">
+              <%= gravatar_for current_user, size: 62 %>
+          <h1>
+            <%= current_user.name %>
+          </h1>
+          </a>
+          <a id="loopposts_q"class="btn btn-success col-xs-3 col-lg-3 divspace" onclick="document.getElementById('searcher').value='*<%= current_user.name %> Posts*'; $.get('micropost_filter/?filter=myposts');">
+            <%= pluralize(current_user.microposts.count, "Loop posts") %>
+          </a>
+          
+          <a class="col-xs-0 col-lg-1" style="width: 1%;"></a>
+          <a id="metoo_q" class="btn btn-primary col-xs-3 col-lg-3 divspace" onclick="document.getElementById('searcher').value='*Me too Posts*'; $.get('micropost_filter/?filter=metoos');_gaq.push(['_trackEvent', 'Pre-defined filters', 'Quantified Lists', 'Me Toos']);">
+            <%= pluralize(current_user.metoos.count, "Me Toos") %> </a>
+          <a class="col-xs-0 col-lg-1" style="width: 1%;"></a>
+          <a id="actionrequired_q" class="btn btn-warning col-xs-3 col-lg-3 divspace" onclick="document.getElementById('searcher').value='*Action Required up Posts*'; $.get('micropost_filter/?filter=followups');">
+            <%= pluralize(current_user.followups.count, "Needs Action") %></a>
+        <%#= render 'shared/user_info' %>
+      </section>
+      <br>
+      
+        <%= render 'shared/micropost_form' %>
+      
+    </aside>
+    <div class="col-xs-12 col-lg-6 col-lg-push6">
+      
+      <div class="pushingstuff">
+        <h3>The Feed</h3>
+      <div class="right-inner-addon">
+            <i id="searchclear" class="glyphicon glyphicon-remove-circle"></i>
+            <input type="search"
+           class="form-control" 
+           placeholder="Search" id="searcher" /> 
+         </div>
+
+      
+      
+      <div class="row">
+        <div class="col-xs-1"></div>
+      <div class="col-xs-2">FILTERS:</div> 
+       
+      
+      <div>
+        <a id="filterlist_posts" class="col-xs-2" onclick="document.getElementById('searcher').value='*<%= current_user.name %> Posts*'; $.get('micropost_filter/?filter=myposts');this.style.textDecoration='underline'; document.getElementById('filterlist_metoo').style.textDecoration='none'; document.getElementById('filterlist_watch').style.textDecoration='none'; document.getElementById('filterlist_action').style.textDecoration='none';_gaq.push(['_trackEvent', 'Pre-defined filters', 'Filters', 'My Posts']);" style="cursor:pointer;">My Posts</a>
+      </div>
+      <div >
+      <a id="filterlist_metoo" class="col-xs-2" onclick="document.getElementById('searcher').value='*<%= current_user.name %> Me too posts*'; $.get('micropost_filter/?filter=metoos');this.style.textDecoration='underline'; document.getElementById('filterlist_posts').style.textDecoration='none'; document.getElementById('filterlist_watch').style.textDecoration='none'; document.getElementById('filterlist_action').style.textDecoration='none';_gaq.push(['_trackEvent', 'Pre-defined filters', 'Filters', 'Me Toos']);" style="cursor:pointer;" style="cursor:pointer;">Me Too's</a>
+      </div>
+      <div >
+      <a id="filterlist_action" class="col-xs-3" onclick="document.getElementById('searcher').value='*Posts that require action*'; $.get('micropost_filter/?filter=followups');this.style.textDecoration='underline'; document.getElementById('filterlist_metoo').style.textDecoration='none'; document.getElementById('filterlist_watch').style.textDecoration='none'; document.getElementById('filterlist_posts').style.textDecoration='none';_gaq.push(['_trackEvent', 'Pre-defined filters', 'Filters', 'Action Required']);" style="cursor:pointer;" style="cursor:pointer; ">Action Required</a>
+      </div>
+      <div >
+      <a id="filterlist_watch" class="col-xs-2" onclick="document.getElementById('searcher').value='*Watched Posts*'; $.get('micropost_filter/?filter=watched');this.style.textDecoration='underline'; document.getElementById('filterlist_metoo').style.textDecoration='none'; document.getElementById('filterlist_posts').style.textDecoration='none'; document.getElementById('filterlist_action').style.textDecoration='none';_gaq.push(['_trackEvent', 'Pre-defined filters', 'Filters', 'Watched']);" style="cursor:pointer;" style="cursor:pointer; ">Watched</a>
+      </div>
+      </div></div>
+    
+      <br>
+      <ol class="microposts">
+      <div id="microposts" class="microposts">
+      </div>
+      </ol>
+
+
+      <% if @search_items == nil %>
+      <div id="feed_div" class="microposts">
+        <%= render 'shared/feed' %>
+      </div>
+      <%end%>
+        
+    </div>
+
+<% else %>
+  <div class="center hero-unit jumbotron">
+    <h1>Project Loop</h1>
+
+    <h2>
+      Log in to get in the Loop using your Workiva Account:
+    </h2>
+    <hr>
+    <br>
+
+    <a class="btn btn-xlarge btn-success" href="/users/auth/google_oauth2" title="Sign in"><img src="/assets/images/W_white.png" />  &nbsp;&nbsp;&nbsp;Sign in with Workiva Email</a>
+    <%#= link_to "Sign in to Loop using your Workiva email", new_user_session_path, class: "btn btn-xlarge btn-success" %>
+  </div>
+
+<% end %>
+
+<script>
+$("#searcher").keyup(function(event) {
+    $.get('micropost_search/?search='+ $(this).val());
+  });
+</script>
+<script>
+      $("#searchclear").click(function(){
+      $("#searcher").val('');
+      $.get('micropost_search/?search='+ $(this).val());
+      document.getElementById('filterlist_metoo').style.textDecoration='none'; 
+      document.getElementById('filterlist_watch').style.textDecoration='none'; 
+      document.getElementById('filterlist_action').style.textDecoration='none';
+      document.getElementById('filterlist_posts').style.textDecoration='none';
+        });
+
+</script>
+
+<script>
+// Using jQuery Event API v1.3 - GA universal
+$('#loopposts_q').on('click', function() {
+  ga('send', 'event', 'Pre-defined filters', 'Quantified Lists', 'My Posts');
+});
+$('#metoo_q').on('click', function() {
+  ga('send', 'event', 'Pre-defined filters', 'Quantified Lists', 'Me toos');
+});
+$('#actionrequired_q').on('click', function() {
+  ga('send', 'event', 'Pre-defined filters', 'Quantified Lists', 'action required');
+});
+
+$('#filterlist_posts').on('click', function() {
+  ga('send', 'event', 'Pre-defined filters', 'Filters', 'My Posts');
+});
+$('#filterlist_metoo').on('click', function() {
+  ga('send', 'event', 'Pre-defined filters', 'Filters', 'Me toos');
+});
+$('#filterlist_action').on('click', function() {
+  ga('send', 'event', 'Pre-defined filters', 'Filters', 'action required');
+});
+$('#filterlist_watch').on('click', function() {
+  ga('send', 'event', 'Pre-defined filters', 'Filters', 'Watched');
+});
+</script>

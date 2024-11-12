@@ -1,0 +1,9 @@
+<% if @usersearch_items != nil %>
+
+        <%#= foreach post that meet search criteria%>
+          <% @usersearch_items.each do |user| %>
+
+          <%=user.name%>
+
+          <%end%>
+          <%end%>

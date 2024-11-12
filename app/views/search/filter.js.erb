@@ -1,0 +1,19 @@
+<% if params["filter"] == "watched" %>
+$('#feed_div').html('<%= escape_javascript(render('shared/feed_fav')) %>');
+$('#microposts').html('');
+<% end %>
+
+<% if params["filter"] == "followups" %>
+$('#feed_div').html('<%= escape_javascript(render('shared/feed_followups')) %>');
+$('#microposts').html('');
+<% end %>
+
+<% if params["filter"] == "myposts" %>
+$('#feed_div').html('<%= escape_javascript(render('shared/feed_myposts')) %>');
+$('#microposts').html('');
+<% end %>
+
+<% if params["filter"] == "metoos" %>
+$('#feed_div').html('<%= escape_javascript(render('shared/feed_metoos')) %>');
+$('#microposts').html('');
+<% end %>

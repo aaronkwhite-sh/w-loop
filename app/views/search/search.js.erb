@@ -1,0 +1,10 @@
+$('#microposts').html('<%= escape_javascript(render('micropost')) %>');
+
+
+<% if @search_items == nil %>
+$('#feed_div').html('<%= escape_javascript(render('shared/feed')) %>');
+<% end %>
+
+<% if @search_items != nil %>
+$('#feed_div').html('');
+<% end %>

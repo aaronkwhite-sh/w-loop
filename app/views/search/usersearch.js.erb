@@ -1,0 +1,9 @@
+$('#usersearch').html('<%= escape_javascript(render('user')) %>');
+
+<% if @usersearch_items == nil %>
+$('#usersearch2').html('<%= escape_javascript(render('users/allusers')) %>');
+<% end %>
+
+<% if @usersearch_items != nil %>
+$('#usersearch2').html('');
+<% end %>

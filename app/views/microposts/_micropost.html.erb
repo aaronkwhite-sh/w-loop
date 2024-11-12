@@ -1,0 +1,148 @@
+<li>
+  <span class="content2"><% temp_content = linkify_hashtags_within(micropost.content) %> <%= auto_link(temp_content, :html => { :target => '_blank' }, :sanitize => false).html_safe %></span>
+  <span class="timestamp">
+    Posted <%= time_ago_in_words(micropost.created_at) %> ago.
+  </span> <br>
+
+
+
+
+    <% if current_user == micropost.user %>
+  <div>
+    <% if Followup.where(:user_id => current_user, :micropost_id => micropost.id, :done => nil).present? %>
+    <%= link_to raw('<i class="glyphicon glyphicon-exclamation-sign"></i> Action'), {:controller => "followup", 
+                       :action => "create", 
+                       :user_id => current_user.id, 
+                       :done => true,
+                       :micropost_id => micropost.id,
+                       :feed_user => micropost.user.name}, remote: true,
+                       :method => "post", data: { confirm: "You sure this is really complete?" }, title: micropost.content, class: "btn btn-default btn-xs btn-danger", :style=>'', onclick: "javascript:reloadfunction();"  %> &nbsp;
+    <% elsif Followup.where(:user_id => current_user, :micropost_id => micropost.id, :done => true).present? %>
+    <%= link_to raw('<i class="glyphicon glyphicon-exclamation-sign"></i> Action'), {:controller => "followup", 
+                       :action => "create", 
+                       :user_id => current_user.id, 
+                       :done => nil,
+                       :micropost_id => micropost.id,
+                       :feed_user => micropost.user.name}, remote: true,
+                       :method => "post", data: { confirm: "You sure you want to reset this completed action?" }, class: "btn btn-default btn-xs", :style=>'color:#51A351; text-decoration:line-through;', onclick: "javascript:reloadfunction();"  %> &nbsp;
+    <% else %>
+    <%= link_to raw('<i class="glyphicon glyphicon-exclamation-sign"></i> Action'), {:controller => "followup", 
+                       :action => "create", 
+                       :user_id => current_user.id, 
+                       :micropost_id => micropost.id,
+                       :feed_user => micropost.user.name}, remote: true,
+                       :method => "post", class: " btn btn-default btn-xs", :style=>'none', onclick: "javascript:reloadfunction();"  %> &nbsp;
+    <% end %>
+    
+    <% if Favorite.where(:user_id => current_user, :micropost_id => micropost.id).present? %>
+    <%= link_to raw('<i class="glyphicon glyphicon-eye-open"></i> Watched'), {:controller => "favorite", 
+                       :action => "create", 
+                       :user_id => current_user.id, 
+                       :micropost_id => micropost.id,
+                       :feed_user => micropost.user.name}, remote: true,
+                       :method => "post", class: "btn btn-default btn-xs btn-warning", :style=>'', onclick: "javascript:reloadfunction();"  %>
+    <% else %>
+    <%= link_to raw('<i class="glyphicon glyphicon-eye-open"></i> Watch'), {:controller => "favorite", 
+                       :action => "create", 
+                       :user_id => current_user.id, 
+                       :micropost_id => micropost.id,
+                       :feed_user => micropost.user.name}, remote: true,
+                       :method => "post", class: "btn btn-default btn-xs", onclick: "javascript:reloadfunction();"  %>
+    <% end %> 
+    <!-- <a href="" class="glyphicon glyphicon-edit">Edit</a> &nbsp;-->
+    <%= link_to "Delete", micropost, method: :delete, data: { confirm: "You sure?" }, remote: true, title: micropost.content, class: "glyphicon glyphicon-trash btn btn-default btn-xs pull-right" %>
+
+
+    <% if Favorite.where(:micropost_id => micropost.id).present? %>
+    <a class="badge" style="cursor: help;" id="myfavpeople<%=micropost.id%>"><%= Favorite.where(:micropost_id => micropost.id).count %></a>&nbsp;
+
+    <div class="thispost<%=micropost.id%>" style="display:none">
+    <h6> People Watching </h6>
+    <% names = Favorite.where(:micropost_id => micropost.id)
+    names.all.each do |namesstuff| %>
+    <%= link_to gravatar_for(namesstuff.user, size: 28), namesstuff.user%> <%= link_to namesstuff.user.name, namesstuff.user %> <br> <br>
+    <%end%>
+    </div>
+
+
+
+    <%else%>
+    &nbsp;
+    <%end%>
+
+  </div>
+  <% else %>
+  <div> 
+    <% if Followup.where(:user_id => micropost.user.id, :micropost_id => micropost.id).present? %>
+    <span class="glyphicon glyphicon-exclamation-sign" style='color:#FFA500;'>Action</span> &nbsp;
+    <% else %>
+    <span class="glyphicon glyphicon-exclamation-sign">Action</span> &nbsp;
+    <% end %>
+
+    <% if Metoo.where(:user_id => current_user, :micropost_id => micropost.id).present? %>
+    <%= link_to 'Me_too\'ed', {:controller => "metoo", 
+                       :action => "create", 
+                       :user_id => current_user.id, 
+                       :micropost_id => micropost.id,
+                       :feed_user => micropost.user.name}, remote: true,
+                       :method => "post", class: "glyphicon glyphicon-thumbs-up", :style=>'color:#FFA500;', onclick: "javascript:reloadfunction();" %> &nbsp;
+    <% else %>
+    <%= link_to 'Me_too', {:controller => "metoo", 
+                       :action => "create", 
+                       :user_id => current_user.id, 
+                       :micropost_id => micropost.id,
+                       :feed_user => micropost.user.name}, remote: true,
+                       :method => "post", class: "glyphicon glyphicon-thumbs-up" %> &nbsp;
+    <% end %>
+    <% if Favorite.where(:user_id => current_user, :micropost_id => micropost.id).present? %>
+    <%= link_to 'Watched', {:controller => "favorite", 
+                       :action => "create", 
+                       :user_id => current_user.id, 
+                       :micropost_id => micropost.id,
+                       :feed_user => micropost.user.name}, remote: true,
+                       :method => "post", class: "glyphicon glyphicon-eye-open", :style=>'color:#FFA500;', onclick: "javascript:reloadfunction();" %> &nbsp;
+    <% else %>
+    <%= link_to 'Watch', {:controller => "favorite", 
+                       :action => "create", 
+                       :user_id => current_user.id, 
+                       :micropost_id => micropost.id,
+                       :feed_user => micropost.user.name}, remote: true,
+                       :method => "post", class: "glyphicon glyphicon-eye-open", onclick: "javascript:reloadfunction();" %> &nbsp;
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+  <% end %>
+  <% end %>
+
+
+
+
+</li>
+
+<script type="text/javascript">
+  function reloadfunction(){
+    location.reload();
+}
+</script>
+
+<script>
+$('#myfavpeople<%=micropost.id%>').click(function() {
+    $('.thispost<%=micropost.id%>').slideToggle('fast');
+    return false;
+});
+</script>
+<script>
+$('#myfavpeople1<%=micropost.id%>').click(function() {
+    $('.thispost<%=micropost.id%>').slideToggle('fast');
+    return false;
+});
+</script>

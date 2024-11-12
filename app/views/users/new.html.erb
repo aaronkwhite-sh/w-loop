@@ -1,0 +1,44 @@
+
+<% provide(:title, 'Sign up') %>
+<div class="border-form-div">
+<h1>Sign up</h1>
+
+<style>
+.opahover img {
+opacity: 0.5;
+}
+.opahover img:hover {
+opacity: 1;
+}
+</style>
+
+<hr> <center>
+<h2>Use your Workiva Google account to sign up</h2>
+<div class="opahover span4 centered">
+<a href="/auth/google_oauth2" title="Google Plus"><img src="/assets/images/google_plus-round-64.png" /></a>
+</div>
+<hr> 
+<h2>Or create a user login account:</h2>
+  </center>
+<div class="row">
+  <div class="span6 offset3">
+    <%= form_for(@user) do |f| %>
+      <%= render 'shared/error_messages', object: f.object %>
+
+      <%= f.label :name %>
+      <%= f.text_field :name %>
+
+      <%= f.label :email %>
+      <%= f.text_field :email %>
+
+      <%= f.label :password %>
+      <%= f.password_field :password %>
+
+      <%= f.label :password_confirmation, "Confirmation" %>
+      <%= f.password_field :password_confirmation %>
+
+      <%= f.submit "Create my account", class: "btn btn-large btn-primary" %>
+    <% end %>
+  </div>
+</div>
+</div>
